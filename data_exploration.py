@@ -6,10 +6,24 @@ from nltk.stem import PorterStemmer as ps
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import spacy as spy
+
 #Read the data
 data = pd.read_csv("mobil_listrik.csv")
+data.shape
 data = data.dropna()
-print(data)
+data = data.drop_duplicates()
+data.head()
+#Check missing and duplicate values
+totalDuplicateData = data.duplicated().sum()
+print(f"Total duplicated data : {totalDuplicateData}")
+data.isnull().sum()
+print(data.head())
+data.shape
+uniqueSymbols = data["text_cleaning"].unique()
+print(uniqueSymbols)
+uniqueSymbols.shape
+uniqueSymbols2 = set(data["text_cleaning"])
+print(uniqueSymbols2)
 
 #find the data that contains the word "saran"
 strToFind = "saran"
@@ -65,5 +79,23 @@ sia.polarity_scores(testData)
 #Test bhs inggris dibawah
 sia.polarity_scores("i don't like this music!")
 sia.polarity_scores("for me, electric vehicle is just not convenient because of the price.")
+
 #For the second test using english, the result is not good.
 #I think VADER just not the right approach to do sentiment analysis, the result's accuracy isn't consistent
+
+from collections import Counter
+from wordcloud import WordCloud
+
+commonWords = Counter(" ".join(data["text_cleaning"]).split())
+wc = WordCloud(width=800, height=400, background_color='black').generate_from_frequencies(dict(commonWords))
+plt.figure(figsize=(15, 15))
+plt.imshow(wc, interpolation='bilinear')
+plt.axis('off')
+plt.show()
+
+uniqueWords = set(" ".join(data["text_cleaning"]).split())
+for i in uniqueWords:
+    print(i)
+
+#Preprocessing on 3rd cycle
+#Normalisasi
