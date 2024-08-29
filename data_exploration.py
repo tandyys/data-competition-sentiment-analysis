@@ -13,10 +13,26 @@ data.shape
 data = data.dropna()
 data = data.drop_duplicates()
 data.head()
+
+#Try to combine all the text data into one
+words = data['text_cleaning'].tolist()
+print(words)
+joinedWords = " ".join(words).split()
+setWords = set(joinedWords)
+print(setWords)
+
+totalSetWords = len(setWords)
+print(totalSetWords)
+print(len(joinedWords))
+
+#I'm trying to get all the unique words from the data
+for word in setWords:
+    print(f"{word}")
+#but it seems can't be done because the data is too big???
+
 #Check missing and duplicate values
 totalDuplicateData = data.duplicated().sum()
-print(f"Total duplicated data : {totalDuplicateData}")
-data.isnull().sum()
+print(f"Total duplicated data : {totalDuplicateData}") data.isnull().sum()
 print(data.head())
 data.shape
 uniqueSymbols = data["text_cleaning"].unique()
@@ -97,5 +113,40 @@ uniqueWords = set(" ".join(data["text_cleaning"]).split())
 for i in uniqueWords:
     print(i)
 
+#Find the data that contains the word "sawit"
+wordToFind_5 = "sawit"
+filteredData_6 = data[data['text_cleaning'].str.contains(wordToFind_5, case=False)]
+print(filteredData_6)
+print(filteredData_6["text_cleaning"].values[0])
+print(filteredData_6["text_cleaning"].values[1])
+print(filteredData_6["text_cleaning"].values[2])
+#Find the data that contains the word "beli"
+wordToFind = "beli"
+filteredData_2 = data[data['text_cleaning'].str.contains(wordToFind, case=False)]
+print(filteredData_2)
+#Find the data that contains the word "harga"
+wordToFind_2 = "harga"
+filteredData_3 = data[data['text_cleaning'].str.contains(wordToFind_2, case=False)]
+print(filteredData_3)
+#Find the word that contains the word "mobil"
+wordToFind_3 = "mobil"
+filteredData_4 = data[data['text_cleaning'].str.contains(wordToFind_3, case=False)]
+print(filteredData_4)
+#Find the data that contains the word "beli", "harga", and "mobil"
+wordToFind_4 = ["beli", "harga", "mobil"]
+pattern = r'\b' + r'\b|\b'.join(wordToFind_4) + r'\b'
+pattern = pattern.replace(r'\b|\b', r'\b|\b')
+filteredData_5 = data[data['text_cleaning'].str.contains(pattern, case=False, regex=True)]
+print(filteredData_5)
+print(filteredData_5["text_cleaning"].values[483])
+
+
 #Preprocessing on 3rd cycle
 #Normalisasi
+
+#Stopword removal -> remove words that doesn't have any meaning ex: "dan", "atau", "yang"
+#Indo using Sastrawi & English using NLTK.corpus import stopwords
+
+#Tokenization -> split the sentence into words
+
+#Stemming
