@@ -32,7 +32,8 @@ for word in setWords:
 
 #Check missing and duplicate values
 totalDuplicateData = data.duplicated().sum()
-print(f"Total duplicated data : {totalDuplicateData}") data.isnull().sum()
+print(f"Total duplicated data : {totalDuplicateData}")
+data.isnull().sum()
 print(data.head())
 data.shape
 uniqueSymbols = data["text_cleaning"].unique()
@@ -140,12 +141,13 @@ filteredData_5 = data[data['text_cleaning'].str.contains(pattern, case=False, re
 print(filteredData_5)
 print(filteredData_5["text_cleaning"].values[483])
 
-
 #Preprocessing on 3rd cycle
 #Normalisasi
 
 #Stopword removal -> remove words that doesn't have any meaning ex: "dan", "atau", "yang"
 #Indo using Sastrawi & English using NLTK.corpus import stopwords
+
+#Translate the data
 
 #Tokenization -> split the sentence into words
 
