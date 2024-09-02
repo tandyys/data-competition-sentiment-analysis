@@ -100,7 +100,7 @@ sia.polarity_scores("for me, electric vehicle is just not convenient because of 
 #For the second test using english, the result is not good.
 #I think VADER just not the right approach to do sentiment analysis, the result's accuracy isn't consistent
 
-#WordCloud -> frequency of words
+#WordCloud : "frequency of words"
 from collections import Counter
 from wordcloud import WordCloud
 
@@ -143,11 +143,13 @@ def convertToEnglish(word):
     return translator.translate(word)
 
 translatedUniqueWords = [convertToEnglish(word) for word in filteredUniqueWords]
+print(len(translatedUniqueWords))
+translatedUniqueWords_df = pd.DataFrame(translatedUniqueWords)
+translatedUniqueWords_df.to_csv("translatedUniqueWords.csv", index=False)
 
 #Tokenize filteredUniqueWords
 filteredUniqueWordsToken = tokenizer(" ".join(filteredUniqueWords))
 print(len(filteredUniqueWordsToken))
-
 
 #Turn the filtered unique words and the unique words more than 5 into csv for manual checking the words data
 filteredUniqueWords_df = pd.DataFrame(filteredUniqueWords)
@@ -195,13 +197,45 @@ print(f"Negatif: {len(df_negatif)}")
 print(f"Neutral: {len(df_netral)}")
 
 #Normalisasi
-normWords = {}
 
-#Stopword removal -> remove words that doesn't have any meaning ex: "dan", "atau", "yang"
+normWords = {
+    "jg" : "juga",
+    "cm" : "cuma",
+    "yg" : "yang",
+    "blm" : "belum",
+    "dl"  : "dahulu",
+    "ngaco" : "rusak",
+    "blom" : "belum",
+}
+
+def normalize_text(str_text):
+    for i in normWords:
+        str_text = str_text.replace(i, normWords[i])
+    return str_text
+
+data['text_cleaning'] = data['text_cleaning'].apply(lambda x: normalize_text(x))
+data['text_cleaning'].head()
+
+#Stopword removal -> remove words that do"sn't have any meaning ex: "dan", "atau", "yang"
 #Indo using Sastrawi & English using NLTK.corpus import stopwords
+import Sastrawi
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory, StopWordRemover, ArrayDictionary
+stop_words = StopWordRemoverFactory().get_stop_words()
+new_array = ArrayDictionary(stop_words)
+stop_words_remover_new = StopWordRemover(new_array)
+
+def stopword_removal(text):
+    return stop_words_remover_new.remove(text)
+
+data['text_cleaning'] = data['text_cleaning'].apply(lambda x: stopword_removal(x))
+
+data = data.drop(['id_komentar', 'nama_akun', 'tanggal'], axis=1)
+data.head()
 
 #Translate the data
+data['translatedText'] = data['text_cleaning'].apply(lambda x: convertToEnglish(x))
+data['translatedText'].head()
 
-#Tokenization -> split the sentence into words
+#Tokenization -> split the sentence to words
 
 #Stemming
