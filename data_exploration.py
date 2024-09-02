@@ -100,6 +100,7 @@ sia.polarity_scores("for me, electric vehicle is just not convenient because of 
 #For the second test using english, the result is not good.
 #I think VADER just not the right approach to do sentiment analysis, the result's accuracy isn't consistent
 
+#WordCloud -> frequency of words
 from collections import Counter
 from wordcloud import WordCloud
 
@@ -109,11 +110,52 @@ plt.figure(figsize=(15, 15))
 plt.imshow(wc, interpolation='bilinear')
 plt.axis('off')
 plt.show()
+##############################################################################################################
 
+
+#Combining all the text data into one using set to remove the duplicate words
 uniqueWords = set(" ".join(data["text_cleaning"]).split())
 for i in uniqueWords:
     print(i)
+print(len(uniqueWords))
+allWords = " ".join(data["text_cleaning"]).split()
+print(allWords)
+print(len(allWords))
 
+uniqueWordsData = pd.DataFrame(uniqueWords)
+uniqueWordsData.to_csv("uniqueWords.csv", index=False)
+#Check the words that are not in the uniqueWords
+checkTheWords =[word for word in allWords if word not in uniqueWords]
+print(checkTheWords)
+
+filteredUniqueWords = [word for word in uniqueWords if len(word) <= 5]
+print(filteredUniqueWords)
+print(len(filteredUniqueWords))
+uniqueWordsMoreThan5 = [word for word in uniqueWords if len(word) > 5]
+print(len(uniqueWordsMoreThan5))
+
+#Trying spell checker using nltk
+nltk.download('words')
+#Translate to english
+from translate import Translator as tr
+def convertToEnglish(word):
+    translator = tr(to_lang="en", from_lang="id")
+    return translator.translate(word)
+
+translatedUniqueWords = [convertToEnglish(word) for word in filteredUniqueWords]
+
+#Tokenize filteredUniqueWords
+filteredUniqueWordsToken = tokenizer(" ".join(filteredUniqueWords))
+print(len(filteredUniqueWordsToken))
+
+
+#Turn the filtered unique words and the unique words more than 5 into csv for manual checking the words data
+filteredUniqueWords_df = pd.DataFrame(filteredUniqueWords)
+filteredUniqueWords_df.to_csv("filteredUniqueWords.csv", index=False)
+uniqueWordsMoreThan5_df = pd.DataFrame(uniqueWordsMoreThan5)
+uniqueWordsMoreThan5_df.to_csv("uniqueWordsMoreThan5.csv", index=False)
+
+#All about filtering data
 #Find the data that contains the word "sawit"
 wordToFind_5 = "sawit"
 filteredData_6 = data[data['text_cleaning'].str.contains(wordToFind_5, case=False)]
@@ -142,7 +184,18 @@ print(filteredData_5)
 print(filteredData_5["text_cleaning"].values[483])
 
 #Preprocessing on 3rd cycle
+mask_positif = data['sentimen'] == 0
+
+df_positif = data[mask_positif]
+df_negatif = data[data['sentimen'] == 1]
+df_netral = data[data['sentimen'] == 2]
+
+print(f"Positif: {len(df_positif)}")
+print(f"Negatif: {len(df_negatif)}")
+print(f"Neutral: {len(df_netral)}")
+
 #Normalisasi
+normWords = {}
 
 #Stopword removal -> remove words that doesn't have any meaning ex: "dan", "atau", "yang"
 #Indo using Sastrawi & English using NLTK.corpus import stopwords
