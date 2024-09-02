@@ -234,8 +234,27 @@ data.head()
 
 #Translate the data
 data['translatedText'] = data['text_cleaning'].apply(lambda x: convertToEnglish(x))
-data['translatedText'].head()
+newData = pd.DataFrame(data)
+newData.to_csv("newData.csv", index=False)
 
 #Tokenization -> split the sentence to words
+tokensData = tokenizer(" ".join(data['translatedText']))
+tokenized = data['text_cleaning'].apply(lambda x: tokenizer(x))
+print(tokenized)
 
 #Stemming
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
+def stemming(text_cleaning):
+    factory = StemmerFactory()
+    stemmer = factory.create_stemmer()
+    do = []
+    for i in text_cleaning:
+        do.append(stemmer.stem(i))
+    d_clean =[]
+    d_clean = " ".join(do)
+    print(d_clean)
+    return stemmer.stem(text_cleaning)
+
+tokenized = tokenized.apply(lambda x: stemming(x))
+tokenized.to_csv("preparedData.csv", index=False)
