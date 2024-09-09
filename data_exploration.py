@@ -238,7 +238,8 @@ newData = pd.DataFrame(data)
 newData.to_csv("newData.csv", index=False)
 
 #Tokenization -> split the sentence to words
-tokensData = tokenizer(" ".join(data['translatedText']))
+tokensData = tokenizer(" ".join(data['text_cleaning']))
+print(tokensData)
 tokenized = data['text_cleaning'].apply(lambda x: tokenizer(x))
 print(tokenized)
 
@@ -254,7 +255,18 @@ def stemming(text_cleaning):
     d_clean =[]
     d_clean = " ".join(do)
     print(d_clean)
-    return stemmer.stem(text_cleaning)
-
+    stemmedWords = [stemmer.stem(word) for word in text_cleaning]
+    return stemmedWords
 tokenized = tokenized.apply(lambda x: stemming(x))
 tokenized.to_csv("preparedData.csv", index=False)
+#Embedding word
+import gensim
+from gensim.models import Word2Vec
+
+df = pd.read_csv("preparedData.csv")
+print(df.head())
+model = gensim.models.Word2Vec(df, vector_size=200, window=5, min_count=1)
+print(model.wv.similarity('beli', 'mobil'))
+
+word_vector = model.wv['harga']
+print(word_vector)
