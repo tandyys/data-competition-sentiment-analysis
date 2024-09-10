@@ -6,6 +6,8 @@ from nltk.stem import PorterStemmer as ps
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import spacy as spy
+import gensim
+from gensim.models import Word2Vec
 
 #Read the data
 data = pd.read_csv("mobil_listrik.csv")
@@ -257,14 +259,14 @@ def stemming(text_cleaning):
     print(d_clean)
     stemmedWords = [stemmer.stem(word) for word in text_cleaning]
     return stemmedWords
+
 tokenized = tokenized.apply(lambda x: stemming(x))
 tokenized.to_csv("preparedData.csv", index=False)
 #Embedding word
-import gensim
-from gensim.models import Word2Vec
 
 df = pd.read_csv("preparedData.csv")
 print(df.head())
+
 model = gensim.models.Word2Vec(df, vector_size=200, window=5, min_count=1)
 print(model.wv.similarity('beli', 'mobil'))
 
